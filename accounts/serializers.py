@@ -12,6 +12,12 @@ class SignupSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def to_internal_value(self, data):
+        data = data.copy()
+        if 'username' in data:
+            data['username'] = data['username'].replace(" ", "")
+        return super().to_internal_value(data)
+
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError({
@@ -23,5 +29,5 @@ class SignupSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data['password'])  # 비밀번호 해시처리
+        validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
