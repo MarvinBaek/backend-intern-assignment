@@ -164,3 +164,45 @@ python manage.py runserver
 - Method: GET
 - 인증 필요: Yes
 - Authorization 헤더 필요
+
+## EC2 배포 가이드
+
+### 1. EC2 인스턴스 설정
+- Ubuntu 22.04 LTS 사용
+- 보안 그룹에서 8000 포트 인바운드 규칙 추가
+
+### 2. 서버 배포
+1. EC2 인스턴스에 접속
+```bash
+ssh -i {키페어경로} ubuntu@{EC2_퍼블릭_IP}
+```
+
+2. 프로젝트 디렉토리로 이동
+```bash
+cd ~/backend-intern-assignment
+```
+
+3. 가상환경 활성화
+```bash
+source venv/bin/activate
+```
+
+4. Django 설정 변경
+- `backend/settings.py` 파일에서 `ALLOWED_HOSTS`에 EC2 퍼블릭 IP 추가
+```python
+ALLOWED_HOSTS = ['EC2_퍼블릭_IP', 'localhost', '127.0.0.1']
+```
+
+5. 서버 실행
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
+### 3. API 접속
+- Swagger UI: http://{EC2_퍼블릭_IP}:8000/swagger/
+- ReDoc: http://{EC2_퍼블릭_IP}:8000/redoc/
+
+### 주의사항
+- EC2 인스턴스의 보안 그룹에서 8000 포트가 열려있어야 합니다.
+- 배포 전에 `ALLOWED_HOSTS`에 EC2 퍼블릭 IP가 추가되어 있어야 합니다.
+- 실제 운영 환경에서는 Gunicorn과 Nginx를 사용하는 것이 권장됩니다.
